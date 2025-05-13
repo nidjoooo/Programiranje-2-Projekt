@@ -63,7 +63,6 @@ void addWorkout() {
     return;
 }
 
-// Brisanje treninga po nazivu vjezbe
 void deleteWorkout() {
     WORKOUT* delField = NULL;
     int n, index, flag = 0;
@@ -122,7 +121,6 @@ void deleteWorkout() {
     return;
 }
 
-// Brisanje cijele datoteke
 void deleteFile() {
     char confirm[2] = { '\0' };
     char filename[] = "workoutfile.bin";
@@ -141,7 +139,6 @@ void deleteFile() {
     }
 }
 
-// Izlaz iz programa
 int exitProgram() {
     char confirm[2] = { '\0' };
     printf("Zelite li izaci? (Y/n): ");
