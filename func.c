@@ -16,7 +16,7 @@ void addWorkout() {
     }
 
     printf("Unesite datum: ");
-    scanf(" %10[^\n]", workoutField->date);  
+    scanf(" %20[^\n]", workoutField->date);  
     getchar();  
 
     printf("Unesite ciljnu misicnu skupinu: ");
