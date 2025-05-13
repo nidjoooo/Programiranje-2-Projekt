@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "header.h"
 
-int menu(void) {
+int main(void) {
     int option;
 
     printf("\n===== IronFlow - Evidencija Treninga =====\n");
