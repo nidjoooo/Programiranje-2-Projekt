@@ -4,19 +4,17 @@
 
 #include <stdio.h>
 
-// Struktura za trening
 typedef struct workout {
-    char date[11];             // DD/MM/YYYY
-    char muscleGroup[51];      // npr. Push, Pull, Legs
-    char exerciseName[51];     // npr. Bench press
-    int sets;                  // broj serija
-    int reps;                  // broj ponavljanja
-    float weight;              // tezina u kg
-    float duration;            // trajanje treninga u minutama
-    float progress;            // subjektivni napredak (1-100)
+    char date[11];             
+    char muscleGroup[51];      
+    char exerciseName[51];     
+    int sets;                  
+    int reps;                 
+    float weight;              
+    float duration;           
+    float progress;           
 } WORKOUT;
 
-// Enum za glavni izbornik
 enum MainMenu {
     ADD_WORKOUT = 1,
     DELETE_WORKOUT = 2,
@@ -24,7 +22,6 @@ enum MainMenu {
     EXIT_PROGRAM = 4
 };
 
-// Deklaracije funkcija
 void addWorkout(void);
 void deleteWorkout(void);
 void deleteFile(void);
