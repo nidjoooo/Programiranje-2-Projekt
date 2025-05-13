@@ -5,14 +5,14 @@
 #include <stdio.h>
 
 typedef struct workout {
-    char date[11];             
-    char muscleGroup[51];      
-    char exerciseName[51];     
-    int sets;                  
-    int reps;                 
-    float weight;              
-    float duration;           
-    float progress;           
+    char date[11];
+    char muscleGroup[51];
+    char exerciseName[51];
+    int sets;
+    int reps;
+    float weight;
+    float duration;
+    float progress;
 } WORKOUT;
 
 enum MainMenu {
@@ -26,3 +26,4 @@ void addWorkout(void);
 void deleteWorkout(void);
 void deleteFile(void);
 int exitProgram(void);
+
