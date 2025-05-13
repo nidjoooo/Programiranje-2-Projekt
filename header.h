@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 typedef struct workout {
-    char date[11];
+    char date[21];
     char muscleGroup[51];
     char exerciseName[51];
     int sets;
