@@ -15,29 +15,38 @@ void addWorkout() {
         exit(EXIT_FAILURE);
     }
 
-    printf("Unesite datum (DD/MM/YYYY): ");
-    scanf(" %10[^\n]", workoutField->date);
+    printf("Unesite datum: ");
+    scanf(" %10[^\n]", workoutField->date);  
+    getchar();  
 
-    printf("Unesite ciljnu misicnu skupinu (Push, Pull, Legs): ");
-    scanf(" %50[^\n]", workoutField->muscleGroup);
+    printf("Unesite ciljnu misicnu skupinu: ");
+    fgets(workoutField->muscleGroup, sizeof(workoutField->muscleGroup), stdin);
+    workoutField->muscleGroup[strcspn(workoutField->muscleGroup, "\n")] = '\0';
 
     printf("Unesite naziv vjezbe: ");
-    scanf(" %50[^\n]", workoutField->exerciseName);
+    fgets(workoutField->exerciseName, sizeof(workoutField->exerciseName), stdin);
+    workoutField->exerciseName[strcspn(workoutField->exerciseName, "\n")] = '\0';
+    
 
     printf("Unesite broj serija: ");
     scanf("%d", &workoutField->sets);
+    getchar(); 
 
     printf("Unesite broj ponavljanja: ");
     scanf("%d", &workoutField->reps);
+    getchar();  
 
     printf("Unesite koristenju tezinu (kg): ");
     scanf("%f", &workoutField->weight);
+    getchar(); 
 
     printf("Unesite trajanje treninga (minute): ");
     scanf("%f", &workoutField->duration);
+    getchar();  
 
     printf("Unesite osobni napredak (1-100): ");
     scanf("%f", &workoutField->progress);
+    getchar(); 
 
     fp = fopen("workoutfile.bin", "rb");
     if (fp == NULL) {
@@ -46,7 +55,8 @@ void addWorkout() {
         fwrite(&n, sizeof(int), 1, fp);
         fwrite(workoutField, sizeof(WORKOUT), 1, fp);
         fclose(fp);
-    } else {
+    }
+    else {
         fread(&n, sizeof(int), 1, fp);
         fclose(fp);
 
@@ -65,7 +75,7 @@ void addWorkout() {
 
 void deleteWorkout() {
     WORKOUT* delField = NULL;
-    int n, index, flag = 0;
+    int n, index = -1, flag = 0;
     char searchName[51];
     FILE* fp = fopen("workoutfile.bin", "rb");
 
@@ -85,7 +95,8 @@ void deleteWorkout() {
     fclose(fp);
 
     printf("Unesite naziv vjezbe koju zelite obrisati: ");
-    scanf(" %50[^\n]", searchName);
+    fgets(searchName, sizeof(searchName), stdin);
+    searchName[strcspn(searchName, "\n")] = '\0';
 
     for (int i = 0; i < n; i++) {
         if (strcmp((delField + i)->exerciseName, searchName) == 0) {
@@ -97,7 +108,8 @@ void deleteWorkout() {
 
     if (flag == 0) {
         printf("Vjezba nije pronadjena.\n");
-    } else {
+    }
+    else {
         fp = fopen("workoutfile.bin", "wb");
         if (fp == NULL) {
             perror("Greska prilikom otvaranja datoteke");
@@ -122,29 +134,31 @@ void deleteWorkout() {
 }
 
 void deleteFile() {
-    char confirm[2] = { '\0' };
+    char confirm;
     char filename[] = "workoutfile.bin";
 
     printf("Zelite li obrisati cijelu datoteku? (Y/n): ");
-    scanf(" %c", confirm);
+    scanf(" %c", &confirm);
 
-    if (!strcmp("Y", confirm)) {
+    if (confirm == 'Y') {
         if (remove(filename) == 0) {
             printf("Datoteka obrisana.\n");
-        } else {
+        }
+        else {
             perror("Greska pri brisanju datoteke");
         }
-    } else {
+    }
+    else {
         printf("Datoteka NIJE obrisana.\n");
     }
 }
 
 int exitProgram() {
-    char confirm[2] = { '\0' };
+    char confirm;
     printf("Zelite li izaci? (Y/n): ");
-    scanf(" %c", confirm);
+    scanf(" %c", &confirm);
 
-    if (!strcmp("Y", confirm)) {
+    if (confirm == 'Y') {
         return 0;
     }
 
