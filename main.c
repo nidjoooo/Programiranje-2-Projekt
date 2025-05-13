@@ -14,7 +14,7 @@ int menu(void) {
     printf("==========================================\n");
     printf("Odaberite opciju (1-4): ");
     scanf("%d", &option);
-    getchar();  // Očisti newline karakter
+    getchar();  
 
     switch ((enum MainMenu)option) {
     case ADD_WORKOUT:
