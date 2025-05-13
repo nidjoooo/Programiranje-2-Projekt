@@ -7,193 +7,149 @@
 #include "header.h"
 
 void addWorkout() {
-    FILE* file = NULL;
-    static int totalEntries;
-    WorkoutEntry* newEntry = (WorkoutEntry*)malloc(sizeof(WorkoutEntry));
-    if (!newEntry) {
-        perror("Neuspješno zauzimanje memorije");
+    FILE* fp = NULL;
+    int n;
+    WORKOUT* workoutField = (WORKOUT*)malloc(sizeof(WORKOUT));
+    if (workoutField == NULL) {
+        perror("workoutField == NULL");
         exit(EXIT_FAILURE);
     }
 
-    printf("Unesite datum (dd.mm.gggg.): ");
-    scanf(" %10[^\n]", newEntry->date);
-    getchar();
+    printf("Unesite datum (DD/MM/YYYY): ");
+    scanf(" %10[^\n]", workoutField->date);
 
-    printf("Unesite trajanje treninga (u minutama): ");
-    scanf("%d", &newEntry->duration);
-    getchar();
+    printf("Unesite ciljnu misicnu skupinu (Push, Pull, Legs): ");
+    scanf(" %50[^\n]", workoutField->muscleGroup);
 
-    printf("Unesite tip treninga (0-Push, 1-Pull, 2-Legs): ");
-    scanf("%d", (int*)&newEntry->type);
-    getchar();
+    printf("Unesite naziv vjezbe: ");
+    scanf(" %50[^\n]", workoutField->exerciseName);
 
-    printf("Unesite broj vježbi: ");
-    scanf("%d", &newEntry->exerciseCount);
-    getchar();
+    printf("Unesite broj serija: ");
+    scanf("%d", &workoutField->sets);
 
-    if (newEntry->exerciseCount > MAX_EXERCISES) {
-        printf("Maksimalan broj vježbi je %d. Postavljeno na maksimalno.\n", MAX_EXERCISES);
-        newEntry->exerciseCount = MAX_EXERCISES;
-    }
+    printf("Unesite broj ponavljanja: ");
+    scanf("%d", &workoutField->reps);
 
-    for (int i = 0; i < newEntry->exerciseCount; i++) {
-        printf("Vježba %d:\n", i + 1);
-        printf("- Naziv: ");
-        scanf(" %50[^\n]", newEntry->exercises[i].name);
-        getchar();
+    printf("Unesite koristenju tezinu (kg): ");
+    scanf("%f", &workoutField->weight);
 
-        printf("- Ciljna mišićna skupina (0-Prsa, 1-Ledja, 2-Noge, 3-Ruke, 4-Rame, 5-Core): ");
-        scanf("%d", (int*)&newEntry->exercises[i].targetMuscle);
-        getchar();
+    printf("Unesite trajanje treninga (minute): ");
+    scanf("%f", &workoutField->duration);
 
-        printf("- Serije: ");
-        scanf("%d", &newEntry->exercises[i].sets);
-        getchar();
+    printf("Unesite osobni napredak (1-100): ");
+    scanf("%f", &workoutField->progress);
 
-        printf("- Ponavljanja: ");
-        scanf("%d", &newEntry->exercises[i].reps);
-        getchar();
-
-        printf("- Težina (kg): ");
-        scanf("%f", &newEntry->exercises[i].weight);
-        getchar();
-    }
-
-    printf("Osobna napomena / napredak: ");
-    scanf(" %100[^\n]", newEntry->note);
-    getchar();
-
-    file = fopen("training_data.bin", "rb+");
-
-    if (!file) {
-        file = fopen("training_data.bin", "wb");
-        if (!file) {
-            perror("Greška pri otvaranju datoteke");
-            free(newEntry);
-            exit(EXIT_FAILURE);
-        }
-
-        totalEntries = 1;
-        fwrite(&totalEntries, sizeof(int), 1, file);
-        fwrite(newEntry, sizeof(WorkoutEntry), 1, file);
+    fp = fopen("workoutfile.bin", "rb");
+    if (fp == NULL) {
+        fp = fopen("workoutfile.bin", "wb");
+        n = 1;
+        fwrite(&n, sizeof(int), 1, fp);
+        fwrite(workoutField, sizeof(WORKOUT), 1, fp);
+        fclose(fp);
     } else {
-        fread(&totalEntries, sizeof(int), 1, file);
-        totalEntries++;
-        rewind(file);
-        fwrite(&totalEntries, sizeof(int), 1, file);
-        fseek(file, 0, SEEK_END);
-        fwrite(newEntry, sizeof(WorkoutEntry), 1, file);
+        fread(&n, sizeof(int), 1, fp);
+        fclose(fp);
+
+        fp = fopen("workoutfile.bin", "rb+");
+        n++;
+        fseek(fp, 0, SEEK_SET);
+        fwrite(&n, sizeof(int), 1, fp);
+        fseek(fp, 0, SEEK_END);
+        fwrite(workoutField, sizeof(WORKOUT), 1, fp);
+        fclose(fp);
     }
 
-    fclose(file);
-    free(newEntry);
-    printf("Trening uspješno dodan.\n");
+    free(workoutField);
+    return;
 }
 
+// Brisanje treninga po nazivu vjezbe
 void deleteWorkout() {
-    FILE* file = fopen("training_data.bin", "rb");
-    if (!file) {
-        printf("Datoteka nije pronađena.\n");
+    WORKOUT* delField = NULL;
+    int n, index, flag = 0;
+    char searchName[51];
+    FILE* fp = fopen("workoutfile.bin", "rb");
+
+    if (fp == NULL) {
+        printf("Datoteka je prazna.\n");
         return;
     }
 
-    int total;
-    fread(&total, sizeof(int), 1, file);
-    WorkoutEntry* workouts = (WorkoutEntry*)malloc(total * sizeof(WorkoutEntry));
-    if (!workouts) {
-        perror("Greška u alokaciji memorije");
-        fclose(file);
-        return;
+    fread(&n, sizeof(int), 1, fp);
+    delField = (WORKOUT*)malloc(n * sizeof(WORKOUT));
+    if (delField == NULL) {
+        perror("delField == NULL");
+        exit(EXIT_FAILURE);
     }
 
-    fread(workouts, sizeof(WorkoutEntry), total, file);
-    fclose(file);
+    fread(delField, sizeof(WORKOUT), n, fp);
+    fclose(fp);
 
-    char targetDate[11];
-    printf("Unesite datum treninga koji želite obrisati (dd.mm.gggg.): ");
-    scanf(" %10[^\n]", targetDate);
-    getchar();
+    printf("Unesite naziv vjezbe koju zelite obrisati: ");
+    scanf(" %50[^\n]", searchName);
 
-    int found = 0, index = -1;
-    for (int i = 0; i < total; i++) {
-        if (strcmp(workouts[i].date, targetDate) == 0) {
-            found = 1;
+    for (int i = 0; i < n; i++) {
+        if (strcmp((delField + i)->exerciseName, searchName) == 0) {
             index = i;
+            flag = 1;
             break;
         }
     }
 
-    if (!found) {
-        printf("Nema treninga s tim datumom.\n");
-        free(workouts);
-        return;
-    }
-
-    file = fopen("training_data.bin", "wb");
-    if (!file) {
-        perror("Greška pri otvaranju datoteke za pisanje");
-        free(workouts);
-        return;
-    }
-
-    total--;
-    fwrite(&total, sizeof(int), 1, file);
-    for (int i = 0; i < total + 1; i++) {
-        if (i != index)
-            fwrite(&workouts[i], sizeof(WorkoutEntry), 1, file);
-    }
-
-    fclose(file);
-    free(workouts);
-    printf("Trening obrisan.\n");
-}
-
-void listAllWorkouts() {
-    FILE* file = fopen("training_data.bin", "rb");
-    if (!file) {
-        printf("Nema snimljenih treninga.\n");
-        return;
-    }
-
-    int total;
-    fread(&total, sizeof(int), 1, file);
-    WorkoutEntry* data = (WorkoutEntry*)malloc(total * sizeof(WorkoutEntry));
-    if (!data) {
-        perror("Greška u alokaciji memorije");
-        fclose(file);
-        return;
-    }
-
-    fread(data, sizeof(WorkoutEntry), total, file);
-    fclose(file);
-
-    for (int i = 0; i < total; i++) {
-        printf("Datum: %s\n", data[i].date);
-        printf("Trajanje: %d minuta\n", data[i].duration);
-        printf("Tip: %s\n", workoutTypeToStr(data[i].type));
-        for (int j = 0; j < data[i].exerciseCount; j++) {
-            Exercise e = data[i].exercises[j];
-            printf("- Vježba: %s | Skupina: %s | Serije: %d | Ponavljanja: %d | Težina: %.2f kg\n",
-                   e.name, muscleGroupToStr(e.targetMuscle), e.sets, e.reps, e.weight);
-        }
-        printf("Napomena: %s\n\n", data[i].note);
-    }
-
-    free(data);
-}
-
-void deleteFile() {
-    char confirm;
-    printf("Želite li izbrisati datoteku? (Y/n): ");
-    scanf(" %c", &confirm);
-    getchar();
-
-    if (confirm == 'Y' || confirm == 'y') {
-        if (remove("training_data.bin") == 0)
-            printf("Datoteka je izbrisana.\n");
-        else
-            perror("Greška pri brisanju datoteke");
+    if (flag == 0) {
+        printf("Vjezba nije pronadjena.\n");
     } else {
-        printf("Datoteka nije izbrisana.\n");
+        fp = fopen("workoutfile.bin", "wb");
+        if (fp == NULL) {
+            perror("Greska prilikom otvaranja datoteke");
+            free(delField);
+            exit(EXIT_FAILURE);
+        }
+
+        n--;
+        fwrite(&n, sizeof(int), 1, fp);
+
+        for (int i = 0; i < n + 1; i++) {
+            if (i == index) continue;
+            fwrite((delField + i), sizeof(WORKOUT), 1, fp);
+        }
+
+        printf("Vjezba je obrisana.\n");
+        fclose(fp);
     }
+
+    free(delField);
+    return;
+}
+
+// Brisanje cijele datoteke
+void deleteFile() {
+    char confirm[2] = { '\0' };
+    char filename[] = "workoutfile.bin";
+
+    printf("Zelite li obrisati cijelu datoteku? (Y/n): ");
+    scanf(" %c", confirm);
+
+    if (!strcmp("Y", confirm)) {
+        if (remove(filename) == 0) {
+            printf("Datoteka obrisana.\n");
+        } else {
+            perror("Greska pri brisanju datoteke");
+        }
+    } else {
+        printf("Datoteka NIJE obrisana.\n");
+    }
+}
+
+// Izlaz iz programa
+int exitProgram() {
+    char confirm[2] = { '\0' };
+    printf("Zelite li izaci? (Y/n): ");
+    scanf(" %c", confirm);
+
+    if (!strcmp("Y", confirm)) {
+        return 0;
+    }
+
+    return 1;
 }
