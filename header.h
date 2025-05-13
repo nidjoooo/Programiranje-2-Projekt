@@ -4,30 +4,28 @@
 #define MAX_NAME_LENGTH 51
 #define MAX_EXERCISE_NAME_LENGTH 51
 
-// Definicija struktura za pohranu podataka
+
 typedef struct exercise {
-    char name[MAX_EXERCISE_NAME_LENGTH];  // Ime vježbe
-    int sets;                             // Broj serija
-    int reps;                             // Broj ponavljanja
-    float weight;                         // Težina
+    char name[MAX_EXERCISE_NAME_LENGTH];  
+    int sets;                             
+    int reps;                             
+    float weight;                         
 } EXERCISE;
 
 typedef struct workoutEntry {
-    char date[11];                        // Datum treninga (DD/MM/YYYY)
-    char muscleGroup[MAX_NAME_LENGTH];    // Ciljna mišićna skupina (push/pull/legs)
-    EXERCISE exercises[10];               // Niz vježbi (do 10 vježbi po treningu)
-    int numExercises;                     // Broj vježbi na treningu
-    float duration;                       // Trajanje treninga u minutama
-    float progress;                       // Osobni napredak (postotak ili neki drugi indikator)
+    char date[11];                        
+    char muscleGroup[MAX_NAME_LENGTH];    
+    EXERCISE exercises[10];              
+    int numExercises;                     
+    float duration;                       
+    float progress;                      
 } WORKOUT_ENTRY;
 
-// Definicije za rad sa datotekama
 typedef struct workoutData {
-    int totalEntries;                     // Ukupno unesenih treninga
-    WORKOUT_ENTRY* entries;               // Dinamički niz treninga
+    int totalEntries;                     
+    WORKOUT_ENTRY* entries;               
 } WORKOUT_DATA;
 
-// Enum za izbornik
 enum menu {
     addWorkout = 1,
     viewWorkouts = 2,
@@ -36,7 +34,6 @@ enum menu {
     close = 5
 };
 
-// Enum za podizbornik (ako postoji)
 enum subMenu {
     viewByDate = 1,
     viewByMuscleGroup = 2,
@@ -44,13 +41,12 @@ enum subMenu {
     sortWorkouts = 4
 };
 
-// Deklaracije funkcija
-void addWorkout(void);                   // Funkcija za unos novog treninga
-void viewWorkouts(void);                 // Funkcija za pregled svih treninga
-void deleteWorkout(void);                // Funkcija za brisanje određenog treninga
-void deleteFile(void);                   // Funkcija za brisanje cijele datoteke
-void sortWorkouts(void);                 // Funkcija za sortiranje treninga (npr. po datumu)
-void searchByExercise(void);             // Funkcija za pretragu treninga prema vježbi
-int exitProgram(void);                   // Funkcija za izlazak iz programa
+void addWorkout(void);                   
+void viewWorkouts(void);                 
+void deleteWorkout(void);              
+void deleteFile(void);                   
+void sortWorkouts(void);                 
+void searchByExercise(void);             
+int exitProgram(void);                 
 
-#endif // HEADER_H
+#endif
