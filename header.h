@@ -11,7 +11,7 @@ typedef struct workout {
     int sets;
     int reps;
     float weight;
-    float duration;
+    float duration[21];
     float progress;
 } WORKOUT;
 
