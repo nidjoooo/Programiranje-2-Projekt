@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "header.h"
 
-int main(void) {
+int menu(void) {
     int option;
 
     printf("\n===== IronFlow - Evidencija Treninga =====\n");
@@ -14,23 +14,30 @@ int main(void) {
     printf("==========================================\n");
     printf("Odaberite opciju (1-4): ");
     scanf("%d", &option);
-    getchar();
+    getchar();  // Očisti newline karakter
 
     switch ((enum MainMenu)option) {
-        case ADD_WORKOUT:
-            addWorkout();
-            break;
-        case DELETE_WORKOUT:
-            deleteWorkout();
-            break;
-        case DELETE_FILE:
-            deleteFile();
-            break;
-        case EXIT_PROGRAM:
-            return exitProgram();
-        default:
-            printf("Nepostojeca opcija. Pokusajte ponovo.\n");
+    case ADD_WORKOUT:
+        addWorkout();
+        break;
+    case DELETE_WORKOUT:
+        deleteWorkout();
+        break;
+    case DELETE_FILE:
+        deleteFile();
+        break;
+    case EXIT_PROGRAM:
+        return exitProgram();
+    default:
+        printf("Nepostojeca opcija. Pokusajte ponovo.\n");
     }
 
-    return 1; 
+    return 1;
+}
+
+
+int main(void) {
+    while (menu()) {
+    }
+    return 0;
 }
