@@ -1,52 +1,31 @@
-#ifndef HEADER_H
-#define HEADER_H
+#define _CRT_SECURE_NO_WARNINGS
 
-#define MAX_NAME_LENGTH 51
-#define MAX_EXERCISE_NAME_LENGTH 51
+#pragma once
 
+#include <stdio.h>
 
-typedef struct exercise {
-    char name[MAX_EXERCISE_NAME_LENGTH];  
-    int sets;                             
-    int reps;                             
-    float weight;                         
-} EXERCISE;
+// Struktura za trening
+typedef struct workout {
+    char date[11];             // DD/MM/YYYY
+    char muscleGroup[51];      // npr. Push, Pull, Legs
+    char exerciseName[51];     // npr. Bench press
+    int sets;                  // broj serija
+    int reps;                  // broj ponavljanja
+    float weight;              // tezina u kg
+    float duration;            // trajanje treninga u minutama
+    float progress;            // subjektivni napredak (1-100)
+} WORKOUT;
 
-typedef struct workoutEntry {
-    char date[11];                        
-    char muscleGroup[MAX_NAME_LENGTH];    
-    EXERCISE exercises[10];              
-    int numExercises;                     
-    float duration;                       
-    float progress;                      
-} WORKOUT_ENTRY;
-
-typedef struct workoutData {
-    int totalEntries;                     
-    WORKOUT_ENTRY* entries;               
-} WORKOUT_DATA;
-
-enum menu {
-    addWorkout = 1,
-    viewWorkouts = 2,
-    deleteWorkout = 3,
-    deleteFile = 4,
-    close = 5
+// Enum za glavni izbornik
+enum MainMenu {
+    ADD_WORKOUT = 1,
+    DELETE_WORKOUT = 2,
+    DELETE_FILE = 3,
+    EXIT_PROGRAM = 4
 };
 
-enum subMenu {
-    viewByDate = 1,
-    viewByMuscleGroup = 2,
-    searchByExercise = 3,
-    sortWorkouts = 4
-};
-
-void addWorkout(void);                   
-void viewWorkouts(void);                 
-void deleteWorkout(void);              
-void deleteFile(void);                   
-void sortWorkouts(void);                 
-void searchByExercise(void);             
-int exitProgram(void);                 
-
-#endif
+// Deklaracije funkcija
+void addWorkout(void);
+void deleteWorkout(void);
+void deleteFile(void);
+int exitProgram(void);
