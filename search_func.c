@@ -1,61 +1,117 @@
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include "header.h"
 #include "search.h"
 
+extern Workout* workouts;
+extern int workoutCount;
+
+static void printWorkout(int index, const Workout* w) {
+	printf("[%d] %s | %s | %s | %s | %d x %d x %.2fkg | %dmin\n",
+		index + 1, w->user, w->date, w->muscleGroup,
+		w->exercise, w->sets, w->reps, w->weight, w->duration);
+}
+
 void searchByUser() {
-  char firstName[30];
-  char lastName[30];
-  int n, found = 0;
+	char name[MAX_NAME_LENGTH];
+	printf("Enter user name to search: ");
+	if (!fgets(name, MAX_NAME_LENGTH, stdin)) return;
+	strtok(name, "\n");
 
-  FILE* fp = fopen("workoutfile.bin", "rb");
-  if (!fp) {
-      printf("Datoteka nije pronađena.\n");
-      return;
-    }
-  
-  fread(&n, sizeof(int), 1, fp);
+	qsort(workouts, workoutCount, sizeof(Workout), compareWorkoutsByUser);
 
-  WORKOUT* workouts = (WORKOUT*)malloc(n * sizeof(WORKOUT));
-  if (!workouts) {
-    perror("Greska u alokaciji memorije");
-    fclose(fp);
-    return;
-    }
+	Workout key = { 0 };
+	strncpy(key.user, name, MAX_NAME_LENGTH - 1);
+	Workout* found = (Workout*)bsearch(&key, workouts, workoutCount, sizeof(Workout), compareWorkoutsByUser);
 
-  fread(workouts, sizeof(WORKOUT), n, fp);
-  fclose(fp);
+	int foundAny = 0;
+	if (found) {
+		int i = (int)(found - workouts);
+		for (; i < workoutCount && strcmp(workouts[i].user, name) == 0; i++) {
+			printWorkout(i, &workouts[i]);
+			foundAny = 1;
+		}
+	}
 
-  printf("Unesite ime korisnika: ");
-  scanf(" %29[^\n]", firstName);
-  getchar();
-  printf("Unesite prezime korisnika: ");
-  scanf(" %29[^\n]", lastName);
-  getchar();
+	if (!foundAny) printf("No workouts found for user: %s\n", name);
+}
 
-  for (int i = 0; i < n; i++) {
-  if (strcmp(workouts[i].firstName, firstName) == 0 && strcmp(workouts[i].lastName, lastName) == 0) {
-  printf("\n--- Trening #%d ---\n", i + 1);
-  printf("Ime: %s %s\n", workouts[i].firstName, workouts[i].lastName);
-  printf("Godine: %d\n", workouts[i].age);
-  printf("Težina: %.2f kg\n", workouts[i].weight);
-  printf("Datum: %s\n", workouts[i].date);
-  printf("Mišićna skupina: %s\n", workouts[i].muscleGroup);
-  printf("Vježba: %s\n", workouts[i].exerciseName);
-  printf("Serije: %d, Ponavljanja: %d\n", workouts[i].sets, workouts[i].reps);
-  printf("Težina: %.2f kg\n", workouts[i].usedWeight);
-  printf("Trajanje: %.2f min\n", workouts[i].duration);
-  printf("Napredak: %.2f %%\n", workouts[i].progress);
-  found = 1;
-    }
-  }
+void searchByMuscleGroup() {
+	char muscle[50];
+	printf("Enter muscle group to search: ");
+	if (!fgets(muscle, sizeof(muscle), stdin)) return;
+	strtok(muscle, "\n");
 
-  if (!found) {
-    printf("Nisu pronađeni treninzi za korisnika %s %s.\n", firstName, lastName);
-  }
+	qsort(workouts, workoutCount, sizeof(Workout), compareWorkoutsByMuscleGroup);
 
-  free(workouts);
+	Workout key = { 0 };
+	strncpy(key.muscleGroup, muscle, sizeof(key.muscleGroup) - 1);
+	Workout* found = (Workout*)bsearch(&key, workouts, workoutCount, sizeof(Workout), compareWorkoutsByMuscleGroup);
+
+	int foundAny = 0;
+	if (found) {
+		int i = (int)(found - workouts);
+		for (; i < workoutCount && strcmp(workouts[i].muscleGroup, muscle) == 0; i++) {
+			printWorkout(i, &workouts[i]);
+			foundAny = 1;
+		}
+	}
+
+	if (!foundAny) printf("No workouts found for muscle group: %s\n", muscle);
+}
+
+void searchByDate() {
+	char date[20];
+	printf("Enter date to search: ");
+	if (!fgets(date, sizeof(date), stdin)) return;
+	strtok(date, "\n");
+
+	qsort(workouts, workoutCount, sizeof(Workout), compareWorkoutsByDate);
+
+	Workout key = { 0 };
+	strncpy(key.date, date, sizeof(key.date) - 1);
+	Workout* found = (Workout*)bsearch(&key, workouts, workoutCount, sizeof(Workout), compareWorkoutsByDate);
+
+	int foundAny = 0;
+	if (found) {
+		int i = (int)(found - workouts);
+		for (; i < workoutCount && strcmp(workouts[i].date, date) == 0; i++) {
+			printWorkout(i, &workouts[i]);
+			foundAny = 1;
+		}
+	}
+
+	if (!foundAny) printf("No workouts found for date: %s\n", date);
+}
+
+void searchMenu() {
+	while (1) {
+		printf("\nSearch Menu:\n");
+		printf("1. Search by User\n");
+		printf("2. Search by Muscle Group\n");
+		printf("3. Search by Date\n");
+		printf("4. Return to Main Menu\n");
+		printf("Choose option: ");
+
+		int option;
+		if (scanf("%d", &option) != 1) {
+			while (getchar() != '\n');
+			printf("Invalid input\n");
+			continue;
+		}
+		while (getchar() != '\n');
+
+		switch (option) {
+		case SEARCH_BY_USER:
+			searchByUser();
+			break;
+		case SEARCH_BY_MUSCLE_GROUP:
+			searchByMuscleGroup();
+			break;
+		case SEARCH_BY_DATE:
+			searchByDate();
+			break;
+		case 4:
+			return;
+		default:
+			printf("Invalid option\n");
+		}
+	}
 }
