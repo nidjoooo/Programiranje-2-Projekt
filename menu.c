@@ -1,44 +1,53 @@
-#define _CRT_SECURE_NO_WARNINGS
-
-#include <stdlib.h>
 #include "header.h"
+#include "search.h"
 
-int menu(void) {
-  unsigned int condition = 0;
-  
-  printf("\n================ IronFlow - Trening Evidencija ================\n");
-  printf("\tOpcija 1: Dodaj novi trening\n");
-  printf("\tOpcija 2: Pretraga treninga po korisniku\n");
-  printf("\tOpcija 3: Obrisi trening po vježbi\n");
-  printf("\tOpcija 4: Obrisi cijelu datoteku\n");
-  printf("\tOpcija 5: Izlaz iz programa\n");
-  printf("===============================================================\n");
-  printf("Unesite broj opcije: ");
+extern Workout* workouts;
+extern int workoutCount;
 
-do {
-  scanf("%d", &condition);
-  getchar();
-} while (condition < 1 || condition > 5);
+void showMenu() {
+	while (1) {
+		printf("\nMain Menu:\n");
+		printf("1. Add Workout\n");
+		printf("2. List Workouts\n");
+		printf("3. Update Workout\n");
+		printf("4. Delete Workout\n");
+		printf("5. Search Workouts\n");
+		printf("6. Exit\n");
+		printf("Choose option: ");
 
-switch (condition) {
-  case ADD_WORKOUT:
-  addWorkout();
-  break;
-  case SEARCH_WORKOUT:
-  searchByUser();
-  break;
-  case DELETE_WORKOUT:
-  deleteWorkout();
-  break;
-  case DELETE_FILE:
-  deleteFile();
-  break;
-  case EXIT_PROGRAM:
-  condition = exitProgram();
-  break;
-  default:
-  condition = 0;
-}
+		int choice;
+		if (scanf("%d", &choice) != 1) {
+			while (getchar() != '\n');
+			printf("Invalid input\n");
+			continue;
+		}
+		while (getchar() != '\n');
 
-return condition;
+		switch (choice) {
+		case MENU_ADD:
+			addWorkout();
+			saveToFile();
+			break;
+		case MENU_LIST:
+			listWorkouts();
+			break;
+		case MENU_UPDATE:
+			updateWorkout();
+			saveToFile();
+			break;
+		case MENU_DELETE:
+			deleteWorkout();
+			saveToFile();
+			break;
+		case MENU_SEARCH:
+			searchMenu();
+			break;
+		case MENU_EXIT:
+			saveToFile();
+			freeWorkouts();
+			return;
+		default:
+			printf("Invalid option\n");
+		}
+	}
 }
