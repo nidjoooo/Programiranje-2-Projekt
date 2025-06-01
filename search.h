@@ -1,7 +1,8 @@
-#ifndef SEARCH_H
 #define SEARCH_H
 
 #include "header.h"
+
+#pragma once
 
 void searchMenu();
 
@@ -13,4 +14,3 @@ int compareWorkoutsByUser(const void* a, const void* b);
 int compareWorkoutsByMuscleGroup(const void* a, const void* b);
 int compareWorkoutsByDate(const void* a, const void* b);
 
-#endif
