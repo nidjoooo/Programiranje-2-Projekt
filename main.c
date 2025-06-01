@@ -1,12 +1,8 @@
+#include "search.h"
 #include "header.h"
 
-extern Workout* workouts;
-extern int workoutCount;
-
-void showMenu();
-
 int main() {
-	loadFromFile();
-	showMenu();
-	return 0;
+    loadFromFile();
+    showMainMenu();
+    return 0;
 }
