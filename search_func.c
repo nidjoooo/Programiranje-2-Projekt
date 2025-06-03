@@ -51,9 +51,9 @@ void searchByMuscleGroup() {
 }
 
 void searchByDate() {
-    char date[11];
-    printf("Enter workout date (dd.mm.yyyy): ");
-    scanf("%10s", date);
+    char date[51];
+    printf("Enter workout date: ");
+    scanf("%50s", date);
 
     for (int i = 0; i < workoutCount; i++) {
         if (strcmp(workouts[i].date, date) == 0) {
@@ -61,5 +61,3 @@ void searchByDate() {
         }
     }
 }
-
-
