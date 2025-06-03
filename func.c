@@ -6,29 +6,44 @@
 #include <errno.h>
 #include "header.h"
 
+Workout* workouts = NULL;
+int workoutCount = 0;
+
 void loadFromFile() {
-    FILE* file = fopen("ironflow.bin", "ab+");
+    FILE* file = fopen("ironflow.bin", "rb");
     if (!file) {
-        printf("File does not exist yet. Starting without loaded data.\n");
         return;
     }
 
-    fread(&workoutCount, sizeof(int), 1, file);
-    workouts = malloc(sizeof(Workout) * workoutCount);
-    if (!workouts) {
-        perror("Memory allocation failed");
+    if (fread(&workoutCount, sizeof(int), 1, file) != 1) {
         fclose(file);
         return;
     }
 
-    fread(workouts, sizeof(Workout), workoutCount, file);
+    if (workoutCount <= 0) {
+        fclose(file);
+        workouts = NULL;
+        return;
+    }
+
+    workouts = malloc(sizeof(Workout) * workoutCount);
+    if (!workouts) {
+        fclose(file);
+        return;
+    }
+
+    if (fread(workouts, sizeof(Workout), workoutCount, file) != (size_t)workoutCount) {
+        free(workouts);
+        workouts = NULL;
+        workoutCount = 0;
+    }
+
     fclose(file);
 }
 
 void saveToFile() {
-    FILE* file = fopen("ironflow.bin", "ab+");
+    FILE* file = fopen("ironflow.bin", "wb");
     if (!file) {
-        perror("Failed to open file for writing");
         return;
     }
 
@@ -46,7 +61,6 @@ void freeWorkouts() {
 void addWorkout() {
     workouts = (Workout*)realloc(workouts, (workoutCount + 1) * sizeof(Workout));
     if (!workouts) {
-        perror("Failed to expand memory");
         return;
     }
 
@@ -54,28 +68,45 @@ void addWorkout() {
 
     printf("Enter first name: ");
     scanf("%50s", newEntry->name);
+
     printf("Enter last name: ");
     scanf("%50s", newEntry->surname);
+    
     printf("Enter age: ");
     scanf("%u", &newEntry->age);
+    
     printf("Enter weight (kg): ");
     scanf("%f", &newEntry->weight);
+    
     printf("Enter height (cm): ");
     scanf("%f", &newEntry->height);
+    
+    getchar(); 
     printf("Enter date: ");
-    scanf("%50s", newEntry->date);
+    fgets(newEntry->date, sizeof(newEntry->date), stdin);
+    newEntry->date[strcspn(newEntry->date, "\n")] = 0;
+    
     printf("Enter target muscle group: ");
-    scanf("%50s", newEntry->muscleGroup);
+    fgets(newEntry->muscleGroup, sizeof(newEntry->muscleGroup), stdin);
+    newEntry->muscleGroup[strcspn(newEntry->muscleGroup, "\n")] = 0;
+    
     printf("Total number of exercises performed: ");
     scanf("%d", &newEntry->allExercise);
+    
+    getchar(); 
     printf("Most challenging exercise: ");
-    scanf("%50s", newEntry->hardestExercise);
+    fgets(newEntry->hardestExercise, sizeof(newEntry->hardestExercise), stdin);
+    newEntry->hardestExercise[strcspn(newEntry->hardestExercise, "\n")] = 0;
+    
     printf("Number of sets: ");
     scanf("%d", &newEntry->sets);
+    
     printf("Number of reps: ");
     scanf("%d", &newEntry->reps);
+    
     printf("Weight used in exercise (kg): ");
     scanf("%f", &newEntry->weightExercise);
+    
     printf("Progress rating (1-10): ");
     scanf("%d", &newEntry->progress);
 
@@ -108,6 +139,54 @@ void listWorkouts() {
     }
 }
 
+void editWorkout(int index) {
+    Workout* entry = &workouts[index];
+
+    printf("Updating workout #%d:\n", index + 1);
+
+    printf("Enter first name: ");
+    scanf("%50s", entry->name);
+
+    printf("Enter last name: ");
+    scanf("%50s", entry->surname);
+
+    printf("Enter age: ");
+    scanf("%u", &entry->age);
+
+    printf("Enter weight (kg): ");
+    scanf("%f", &entry->weight);
+
+    printf("Enter height (cm): ");
+    scanf("%f", &entry->height);
+
+    printf("Enter date: ");
+    scanf("%50s", entry->date);
+
+    printf("Enter target muscle group: ");
+    scanf("%50s", entry->muscleGroup);
+
+    printf("Total number of exercises performed: ");
+    scanf("%d", &entry->allExercise);
+    getchar(); 
+
+    printf("Most challenging exercise: ");
+    fgets(entry->hardestExercise, sizeof(entry->hardestExercise), stdin);
+    entry->hardestExercise[strcspn(entry->hardestExercise, "\n")] = '\0'; 
+
+    printf("Number of sets: ");
+    scanf("%d", &entry->sets);
+
+    printf("Number of reps: ");
+    scanf("%d", &entry->reps);
+
+    printf("Weight used in exercise (kg): ");
+    scanf("%f", &entry->weightExercise);
+
+    printf("Progress rating (1-10): ");
+    scanf("%d", &entry->progress);
+}
+
+
 void updateWorkout() {
     int index;
     listWorkouts();
@@ -119,11 +198,7 @@ void updateWorkout() {
         return;
     }
 
-    index--;
-    printf("Updating record...\n");
-    addWorkout();  
-    workouts[index] = workouts[workoutCount - 1];
-    workoutCount--;
+    editWorkout(index - 1);
     saveToFile();
 }
 
