@@ -1,13 +1,10 @@
+#ifndef HEADER_H
 #define HEADER_H
-
-#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-
-#pragma once
 
 typedef struct {
     char name[51];
@@ -40,8 +37,8 @@ typedef enum {
     SEARCH_BY_DATE
 } SearchOptions;
 
-Workout* workouts;
-int workoutCount;
+extern Workout* workouts;
+extern int workoutCount;
 
 void loadFromFile();
 void saveToFile();
@@ -52,6 +49,6 @@ void listWorkouts();
 void updateWorkout();
 void deleteWorkout();
 
-void showMenu();
+void showMainMenu();
 
-
+#endif
