@@ -12,7 +12,7 @@ typedef struct {
     unsigned int age;
     float weight;
     float height;
-    char date[51]; 
+    char date[51];
     char muscleGroup[51];
     int allExercise;
     char hardestExercise[51];
@@ -28,6 +28,9 @@ typedef enum {
     MENU_UPDATE,
     MENU_DELETE,
     MENU_SEARCH,
+    MENU_SORT,
+    MENU_RENAME_FILE,
+    MENU_REMOVE_FILE,
     MENU_EXIT
 } MenuOptions;
 
@@ -48,7 +51,9 @@ void addWorkout();
 void listWorkouts();
 void updateWorkout();
 void deleteWorkout();
+void sortWorkouts();
+Workout* findWorkout(const char* name);
 
-void showMainMenu();
+inline void clearInputBuffer();
 
 #endif
