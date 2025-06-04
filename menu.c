@@ -12,7 +12,10 @@ void showMainMenu() {
         printf("3. Update a workout\n");
         printf("4. Delete a workout\n");
         printf("5. Search workouts\n");
-        printf("6. Exit\n");
+        printf("6. Sort workouts\n");
+        printf("7. Rename data file\n");
+        printf("8. Remove data file\n");
+        printf("9. Exit\n");
         printf("Choice: ");
         scanf("%d", &choice);
 
@@ -32,6 +35,31 @@ void showMainMenu() {
         case MENU_SEARCH:
             searchMenu();
             break;
+        case MENU_SORT:
+            sortWorkouts();
+            saveToFile();
+            break;
+        case MENU_RENAME_FILE: {
+            char oldName[100], newName[100];
+            printf("Enter current file name: ");
+            scanf("%99s", oldName);
+            printf("Enter new file name: ");
+            scanf("%99s", newName);
+
+            if (rename(oldName, newName) == 0) {
+                printf("File renamed successfully to '%s'.\n", newName);
+            }
+            else {
+                printf("Error renaming file: %s\n", strerror(errno));
+            }
+            break;
+        }
+        case MENU_REMOVE_FILE:
+            if (remove("ironflow.bin") == 0)
+                printf("File removed successfully.\n");
+            else
+                perror("Error removing file");
+            break;
         case MENU_EXIT:
             saveToFile();
             freeWorkouts();
@@ -41,6 +69,5 @@ void showMainMenu() {
             printf("Invalid input. Please try again.\n");
             break;
         }
-
     } while (choice != MENU_EXIT);
 }
