@@ -12,17 +12,10 @@ void searchMenu() {
     scanf("%d", &choice);
 
     switch (choice) {
-    case SEARCH_BY_USER:
-        searchByUser();
-        break;
-    case SEARCH_BY_MUSCLE_GROUP:
-        searchByMuscleGroup();
-        break;
-    case SEARCH_BY_DATE:
-        searchByDate();
-        break;
-    default:
-        printf("Invalid selection.\n");
+    case SEARCH_BY_USER: searchByUser(); break;
+    case SEARCH_BY_MUSCLE_GROUP: searchByMuscleGroup(); break;
+    case SEARCH_BY_DATE: searchByDate(); break;
+    default: printf("Invalid selection.\n");
     }
 }
 
@@ -31,10 +24,12 @@ void searchByUser() {
     printf("Enter user's first name to search: ");
     scanf("%50s", firstName);
 
-    for (int i = 0; i < workoutCount; i++) {
-        if (strcmp(workouts[i].name, firstName) == 0) {
-            printf("User: %s %s, Date: %s\n", workouts[i].name, workouts[i].surname, workouts[i].date);
-        }
+    Workout* result = findWorkout(firstName);
+    if (result) {
+        printf("Found: %s %s, Date: %s\n", result->name, result->surname, result->date);
+    }
+    else {
+        printf("User not found.\n");
     }
 }
 
