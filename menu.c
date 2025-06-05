@@ -41,10 +41,36 @@ void showMainMenu() {
             break;
         case MENU_RENAME_FILE: {
             char oldName[100], newName[100];
-            printf("Enter current file name: ");
+            FILE* fileCheck = NULL;
+
+            printf("\n--- Rename Data File ---\n");
+            printf("Enter current file name (e.g. ironflow.bin): ");
             scanf("%99s", oldName);
+
+            fileCheck = fopen(oldName, "rb");
+            if (!fileCheck) {
+                printf("Error: File '%s' does not exist or cannot be opened.\n", oldName);
+                break;
+            }
+            fclose(fileCheck);
+
             printf("Enter new file name: ");
             scanf("%99s", newName);
+            fileCheck = fopen(newName, "rb");
+            if (fileCheck) {
+                fclose(fileCheck);
+                char answer;
+                printf("File '%s' already exists. Overwrite? (y/n): ", newName);
+                scanf(" %c", &answer);
+                if (answer != 'y' && answer != 'Y') {
+                    printf("Rename cancelled.\n");
+                    break;
+                }
+                if (remove(newName) != 0) {
+                    printf("Error deleting existing file: %s\n", strerror(errno));
+                    break;
+                }
+            }
 
             if (rename(oldName, newName) == 0) {
                 printf("File renamed successfully to '%s'.\n", newName);
@@ -54,12 +80,27 @@ void showMainMenu() {
             }
             break;
         }
-        case MENU_REMOVE_FILE:
-            if (remove("ironflow.bin") == 0)
-                printf("File removed successfully.\n");
-            else
-                perror("Error removing file");
+        case MENU_REMOVE_FILE: {
+            char filename[100];
+            printf("\n--- Remove Data File ---\n");
+            printf("Enter file name to remove (e.g. ironflow.bin): ");
+            scanf("%99s", filename);
+
+            FILE* fileCheck = fopen(filename, "rb");
+            if (!fileCheck) {
+                printf("Error: File '%s' does not exist or cannot be opened.\n", filename);
+                break;
+            }
+            fclose(fileCheck);
+
+            if (remove(filename) == 0) {
+                printf("File '%s' removed successfully.\n", filename);
+            }
+            else {
+                printf("Error removing file '%s': %s\n", filename, strerror(errno));
+            }
             break;
+        }
         case MENU_EXIT:
             saveToFile();
             freeWorkouts();
