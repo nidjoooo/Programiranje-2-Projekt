@@ -23,6 +23,10 @@ inline void clearInputBuffer() {
 void sortWorkouts() {
     if (workoutCount > 1) {
         qsort(workouts, workoutCount, sizeof(Workout), compareByName);
+        printf("Workouts sorted by name successfully.\n");
+    }
+    else {
+        printf("Not enough workouts to sort.\n");
     }
 }
 
@@ -38,7 +42,7 @@ void loadFromFile() {
         return;
     }
 
-    rewind(file); 
+    rewind(file);
 
     if (fread(&workoutCount, sizeof(int), 1, file) != 1) {
         fclose(file);
@@ -158,6 +162,10 @@ static void recursiveList(int index) {
 }
 
 void listWorkouts() {
+    if (workoutCount == 0) {
+        printf("No workouts available.\n");
+        return;
+    }
     recursiveList(0);
 }
 
