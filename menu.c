@@ -95,6 +95,9 @@ void showMainMenu() {
 
             if (remove(filename) == 0) {
                 printf("File '%s' removed successfully.\n", filename);
+
+                freeWorkouts();
+                printf("All workout data cleared from memory.\n");
             }
             else {
                 printf("Error removing file '%s': %s\n", filename, strerror(errno));
